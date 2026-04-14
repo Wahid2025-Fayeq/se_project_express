@@ -1,5 +1,3 @@
-
-
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -23,10 +21,24 @@ const clothingItemSchema = new mongoose.Schema({
       message: "Invalid image URL",
     },
   },
-  likes: {
-    type: [mongoose.Schema.Types.ObjectId],
-    default: [],
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "user",
+    required: true,
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+
+  likes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      default: [],
+    },
+  ],
 });
 
 module.exports = mongoose.model("clothingItem", clothingItemSchema);
