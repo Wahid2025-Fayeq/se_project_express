@@ -1,6 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const mainRouter = require("./routes/index.js");
+const mainRouter = require("./routes");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -10,10 +10,14 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
-const routes = require("./routes");
-
 app.use(express.json());
-app.use(routes);
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: "507f1f77bcf86cd799439011",
+  };
+  next();
+});
 
 app.use("/", mainRouter);
 

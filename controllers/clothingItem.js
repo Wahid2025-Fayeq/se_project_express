@@ -1,47 +1,55 @@
+
 const ClothingItem = require("../models/clothingItem");
 
 const createItem = (req, res) => {
-  const { name, imageURL, weather } = req.body;
+  const { name, imageUrl, weather } = req.body;
 
-  ClothingItem.create({ name, imageURL, weather })
-    .then((item) => {
-      res.status(201).send({ data: item });
-    })
+  ClothingItem.create({ name, imageUrl, weather })
+    .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
       }
-      res.status(500).send({ message: "Internal Server Error" });
+
+      return res.status(500).send({ message: "Internal Server Error" });
     });
 };
 
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).send({ message: err.message });
-    });
+    .catch(() => res.status(500).send({ message: "Internal Server Error" }));
 };
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { name, imageURL, weather } = req.body;
+  const { name, imageUrl, weather } = req.body;
 
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $set: { name, imageURL, weather } },
-    { new: true }
+    { name, imageUrl, weather },
+    { new: true, runValidators: true }
   )
-    .then((item) => {
-      if (!item) {
-        return res.status(404).send({ message: "Item not found" });
-      }
-      res.status(200).send({ data: item });
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = 404;
+      throw error;
     })
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
-      console.log(err);
-      return res.status(500).send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return res.status(400).send({ message: err.message });
+      }
+
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID" });
+      }
+
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: "Internal Server Error" });
     });
 };
 
@@ -49,16 +57,84 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndDelete(itemId)
-    .then((item) => {
-      if (!item) {
-        return res.status(404).send({ message: "Item not found" });
-      }
-      res.status(200).send({ message: "Item deleted successfully" });
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = 404;
+      throw error;
     })
+    .then((item) => res.status(200).send(item))
     .catch((err) => {
-      console.log(err);
-      return res.status(500).send({ message: err.message });
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID" });
+      }
+
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: "Internal Server Error" });
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const likeItem = (req, res) => {
+  const { itemId } = req.params;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID" });
+      }
+
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: "Internal Server Error" });
+    });
+};
+
+const dislikeItem = (req, res) => {
+  const { itemId } = req.params;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((item) => res.status(200).send(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid item ID" });
+      }
+
+      if (err.statusCode === 404) {
+        return res.status(404).send({ message: err.message });
+      }
+
+      return res.status(500).send({ message: "Internal Server Error" });
+    });
+};
+
+module.exports = {
+  createItem,
+  getItems,
+  updateItem,
+  deleteItem,
+  likeItem,
+  dislikeItem,
+};
