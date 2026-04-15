@@ -12,7 +12,7 @@ const getUsers = (req, res) => {
     .catch(() =>
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "Internal Server Error" })
+        .send({ message: "An error has occurred on the server" })
     );
 };
 
@@ -25,12 +25,12 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
 
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "Internal Server Error" });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -48,16 +48,18 @@ const getUserById = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Invalid user ID" });
+          .send({ message: "Invalid data" });
       }
 
       if (err.statusCode === NOT_FOUND_ERROR_CODE) {
-        return res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+        return res
+          .status(NOT_FOUND_ERROR_CODE)
+          .send({ message: "Resource not found" });
       }
 
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "Internal Server Error" });
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
