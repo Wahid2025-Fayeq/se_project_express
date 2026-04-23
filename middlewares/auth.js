@@ -6,17 +6,19 @@ module.exports = function auth(req, res, next) {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    req.user = { _id: "5d8b8592978f8bd833ca8133" };
-    return next();
+    return res.status(401).send({ message: "Authorization required" });
   }
 
   const token = authorization.replace("Bearer ", "");
 
+  let payload;
+
   try {
-    req.user = jwt.verify(token, JWT_SECRET);
-    return next();
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    req.user = { _id: "5d8b8592978f8bd833ca8133" };
-    return next();
+    return res.status(401).send({ message: "Authorization required" });
   }
+
+  req.user = payload;
+  return next();
 };
