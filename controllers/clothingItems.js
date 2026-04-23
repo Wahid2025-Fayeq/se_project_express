@@ -2,8 +2,9 @@ const ClothingItem = require("../models/clothingItem");
 const {
   BAD_REQUEST_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
+  FORBIDDEN_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
-} = require("../utils/error");
+} = require("../utils/errors");
 
 const createItem = (req, res) => {
   const { name, imageUrl, weather } = req.body;
@@ -43,13 +44,21 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail(() => {
       const error = new Error("Item not found");
       error.statusCode = NOT_FOUND_ERROR_CODE;
       throw error;
     })
-    .then((item) => res.status(200).send(item))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res.status(FORBIDDEN_ERROR_CODE).send({ message: "Forbidden" });
+      }
+
+      return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>
+        res.status(200).send(deletedItem)
+      );
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         return res

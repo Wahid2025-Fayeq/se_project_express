@@ -1,8 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
+
+const auth = require("./middlewares/auth");
 const mainRouter = require("./routes");
+const cors = require("cors");
+
+const { login, createUser } = require("./controllers/users");
+const { getItems } = require("./controllers/clothingItems");
 
 const app = express();
+app.use(cors());
 const { PORT = 3001 } = process.env;
 
 mongoose
@@ -12,12 +19,11 @@ mongoose
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "507f1f77bcf86cd799439011",
-  };
-  next();
-});
+app.post("/signin", login);
+app.post("/signup", createUser);
+app.get("/items", getItems);
+
+app.use(auth);
 
 app.use("/", mainRouter);
 

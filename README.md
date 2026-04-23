@@ -5,14 +5,34 @@ This project focuses on building a backend server using Node.js and Express, cre
 
 ---
 
+The API supports:
+
+User registration and authentication (JWT-based)
+Creating, retrieving, updating, and deleting clothing items
+Liking and disliking clothing items
+Authorization to ensure users can only modify their own data
+
+---
+
 Functionality
-• View all clothing items
-• Add new clothing items
-• Delete clothing items
-• Like and unlike items
-• Store items in a MongoDB database
-• Handle errors properly with status codes
-• (Planned) User authentication and authorization
+
+User Features
+• Sign up (POST /signup)
+• Sign in (POST /signin)
+• Get current user (GET /users/me)
+• Update profile (PATCH /users/me)
+
+Clothing Items
+• Get all items (GET /items) — public
+• Create item (POST /items) — protected
+• Delete item (DELETE /items/:itemId) — owner only
+• Like item (PUT /items/:itemId/likes)
+• Dislike item (DELETE /items/:itemId/likes)
+
+Authorization
+• JWT-based authentication
+• Protected routes require Authorization: Bearer <token>
+• Users cannot delete items created by others (403 protection)
 
 ---
 
@@ -23,8 +43,20 @@ Technologies Used
 • MongoDB
 • Mongoose
 • REST API
+• bcryptjs — password hashing
+• JWT (jsonwebtoken) — authentication
+• cors — cross-origin requests configured
 • Git & GitHub
 • Postman (for API testing)
+
+---
+
+Security Features
+• Passwords are hashed using bcrypt
+• Password field is hidden (select: false)
+• JWT tokens used for secure authentication
+• Authorization middleware protects routes
+• Ownership validation for deleting items
 
 ---
 
@@ -64,6 +96,9 @@ API Endpoints Example
 • DELETE /items//likes — unlike item
 
 ---
+
+Video Demo
+Link:
 
 Author
 Wahid Fayeq
