@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+
 const { JWT_SECRET = "dev-secret" } = process.env;
 
 module.exports = (req, res, next) => {
@@ -19,5 +20,5 @@ module.exports = (req, res, next) => {
 
   req.user = payload;
 
-   next();
+  next();
 };
