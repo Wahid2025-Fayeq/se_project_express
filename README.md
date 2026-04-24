@@ -97,8 +97,11 @@ API Endpoints Example
 
 ---
 
-Video Demo
-Link:
+Project Pitch Video
+ 
+ Check out this video: https://www.loom.com/share/2e59f1cb02fe41e0a984a554bd892628, where I describe my 
+ project and some challenges I faced while building it.
+
 
 Author
 Wahid Fayeq
