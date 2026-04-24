@@ -13,18 +13,12 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../utils/errors");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch(() =>
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" })
-    );
-};
-
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid data" });
+  }
 
   bcrypt
     .hash(password, 10)
@@ -78,11 +72,16 @@ const login = (req, res) => {
 
       return res.status(200).send({ token });
     })
-    .catch(() =>
-      res
-        .status(UNAUTHORIZED_ERROR_CODE)
-        .send({ message: "Incorrect email or password" })
-    );
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED_ERROR_CODE)
+          .send({ message: "Incorrect email or password" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
+    });
 };
 
 const getCurrentUser = (req, res) => {
@@ -146,7 +145,6 @@ const updateProfile = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   updateProfile,

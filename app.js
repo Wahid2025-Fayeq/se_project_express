@@ -7,6 +7,7 @@ const mainRouter = require("./routes");
 
 const { login, createUser } = require("./controllers/users");
 const { getItems } = require("./controllers/clothingItems");
+const { NOT_FOUND_ERROR_CODE } = require("./utils/errors");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -24,8 +25,23 @@ app.post("/signin", login);
 app.post("/signup", createUser);
 app.get("/items", getItems);
 
-app.use(auth);
+app.use((req, res, next) => {
+  const protectedRoutes = ["/users", "/items"];
 
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    req.path.startsWith(route)
+  );
+
+  if (!isProtectedRoute) {
+    return res
+      .status(NOT_FOUND_ERROR_CODE)
+      .send({ message: " Resource not found" });
+  }
+
+  return next();
+});
+
+app.use(auth);
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
