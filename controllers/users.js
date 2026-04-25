@@ -20,7 +20,7 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST_ERROR_CODE).send({ message: "Invalid data" });
   }
 
-  bcrypt
+  return bcrypt
     .hash(password, 10)
     .then((hash) =>
       User.create({
