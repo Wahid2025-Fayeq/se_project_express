@@ -24,6 +24,6 @@ module.exports = function auth(req, res, next) {
   } catch (err) {
     return res
       .status(UNAUTHORIZED_ERROR_CODE)
-      .json({ message: "Incorrect email or password" });
+      .json({ message: "Invalid token" });
   }
 };

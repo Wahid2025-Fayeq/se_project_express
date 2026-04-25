@@ -96,7 +96,7 @@ const likeItem = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Resource not found" });
+          .send({ message: "Invalid data" });
       }
 
       if (err.statusCode === NOT_FOUND_ERROR_CODE) {
@@ -129,7 +129,7 @@ const dislikeItem = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Resource not found" });
+          .send({ message: "Invalid data" });
       }
 
       if (err.statusCode === NOT_FOUND_ERROR_CODE) {
