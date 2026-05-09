@@ -13,13 +13,12 @@ const app = express();
 const { PORT = 3001 } = process.env;
 
 app.use(cors());
+app.use(express.json());
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
-
-app.use(express.json());
 
 app.post("/signin", login);
 app.post("/signup", createUser);
