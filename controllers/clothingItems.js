@@ -1,14 +1,11 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BAD_REQUEST_ERROR_CODE,
-  NOT_FOUND_ERROR_CODE,
-  FORBIDDEN_ERROR_CODE,
-  INTERNAL_SERVER_ERROR_CODE,
-} = require("../utils/errors");
 
-const createItem = (req, res) => {
+const BadRequestError = require("../errors/BadRequestError");
+const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenError = require("../errors/ForbiddenError");
+
+const createItem = (req, res, next) => {
   const { name, imageUrl, weather } = req.body;
-
   const owner = req.user._id;
 
   ClothingItem.create({
@@ -20,39 +17,28 @@ const createItem = (req, res) => {
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
-    .catch(() =>
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" })
-    );
+    .catch(next);
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND_ERROR_CODE;
-      throw error;
+      throw new NotFoundError("Resource not found");
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        return res.status(FORBIDDEN_ERROR_CODE).send({ message: "Forbidden" });
+        throw new ForbiddenError("Forbidden");
       }
 
       return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>
@@ -61,24 +47,13 @@ const deleteItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
-
-      if (err.statusCode === NOT_FOUND_ERROR_CODE) {
-        return res
-          .status(NOT_FOUND_ERROR_CODE)
-          .send({ message: "Resource not found" });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndUpdate(
@@ -87,31 +62,19 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND_ERROR_CODE;
-      throw error;
+      throw new NotFoundError("Resource not found");
     })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
 
-      if (err.statusCode === NOT_FOUND_ERROR_CODE) {
-        return res
-          .status(NOT_FOUND_ERROR_CODE)
-          .send({ message: "Resource not found" });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findByIdAndUpdate(
@@ -120,27 +83,15 @@ const dislikeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND_ERROR_CODE;
-      throw error;
+      throw new NotFoundError("Resource not found");
     })
     .then((item) => res.status(200).send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: "Invalid data" });
+        return next(new BadRequestError("Invalid data"));
       }
 
-      if (err.statusCode === NOT_FOUND_ERROR_CODE) {
-        return res
-          .status(NOT_FOUND_ERROR_CODE)
-          .send({ message: "Resource not found" });
-      }
-
-      return res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server" });
+      return next(err);
     });
 };
 
