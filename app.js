@@ -30,6 +30,13 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
+// Crash test.
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 app.post("/signin", validateLogin, login);
 app.post("/signup", validateCreateUser, createUser);
 app.get("/items", getItems);

@@ -1,7 +1,10 @@
-WTWR App (What to Wear)
+# WTWR App (What to Wear)
+
 Project Description
-The WTWR (What to Wear) app is a full-stack application that helps users decide what to wear based on weather conditions. Users can add, view, like, and delete clothing items, and categorize them depending on whether the weather is hot, warm, or cold.
-This project focuses on building a backend server using Node.js and Express, creating a RESTful API, and working with a MongoDB database.
+
+The WTWR (What to Wear) app is a full-stack application that helps users decide what to wear based on current weather conditions. Users can create accounts, add, view, like, and delete clothing items, and categorize them based on whether the weather is hot, warm, or cold.
+
+The project is built using Node.js, Express.js, MongoDB, and Mongoose, and features a RESTful API with JWT-based authentication and authorization. It includes secure user registration and login, protected routes, profile management, clothing item ownership validation, and full frontend–backend integration. The application is deployed online and follows modern validation and security practices.
 
 ---
 
@@ -17,22 +20,20 @@ Authorization to ensure users can only modify their own data
 Functionality
 
 User Features
-• Sign up (POST /signup)
-• Sign in (POST /signin)
-• Get current user (GET /users/me)
-• Update profile (PATCH /users/me)
+• Sign up and sign in with JWT authentication  
+• View current user profile  
+• Update user profile information
 
 Clothing Items
-• Get all items (GET /items) — public
-• Create item (POST /items) — protected
-• Delete item (DELETE /items/:itemId) — owner only
-• Like item (PUT /items/:itemId/likes)
-• Dislike item (DELETE /items/:itemId/likes)
+• View all clothing items  
+• Create new clothing items  
+• Delete owned clothing items  
+• Like and dislike clothing items
 
 Authorization
-• JWT-based authentication
-• Protected routes require Authorization: Bearer <token>
-• Users cannot delete items created by others (403 protection)
+• Protected routes for authenticated users  
+• Ownership validation for deleting items  
+• JWT-based secure authentication
 
 ---
 
@@ -79,29 +80,49 @@ Project Structure
 
 ---
 
-Future Improvements
-• Add user authentication (JWT)
-• Add authorization (protect routes)
-• Connect frontend with backend
-• Deploy project online
-• Improve validation and security
+Implemented Features
+• JWT-based user authentication
+• Route authorization and protected endpoints
+• Frontend and backend integration
+• Online deployment
+• Enhanced validation and security
 
 ---
 
 API Endpoints Example
-• GET /items — get all items
-• POST /items — create new item
-• DELETE /items/ — delete item
-• PUT /items//likes — like item
-• DELETE /items//likes — unlike item
+
+Clothing Items
+• GET /items — Get all clothing items  
+• POST /items — Create a new clothing item  
+• DELETE /items/:itemId — Delete a clothing item (owner only)  
+• PUT /items/:itemId/likes — Like a clothing item  
+• DELETE /items/:itemId/likes — Remove like from a clothing item
+
+Users
+• POST /signup — Register a new user  
+• POST /signin — Log in a user  
+• GET /users/me — Get current user profile  
+• PATCH /users/me — Update current user profile
 
 ---
 
-Project Pitch Video
- 
- Check out this video: https://www.loom.com/share/2e59f1cb02fe41e0a984a554bd892628, where I describe my 
- project and some challenges I faced while building it.
+Future Enhancements
 
+• Password reset and email verification  
+• Profile image upload support  
+• Automated testing with Jest and Supertest  
+• Improved UI/UX and mobile responsiveness
+
+---
+
+Domain name:(https://www.mine.bz.jumpingcrab.com)
+
+Frontend GitHub repo Link: https://github.com/Wahid2025-Fayeq/se_project_react
+
+Project Pitch Video
+
+Check out this video: https://www.loom.com/share/e0f66026b99e47d6a052c4d6d9be89ae, where I describe my
+project and some challenges I faced while building it.
 
 Author
 Wahid Fayeq
