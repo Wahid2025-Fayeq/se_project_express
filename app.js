@@ -4,18 +4,10 @@ const cors = require("cors");
 const { errors } = require("celebrate");
 require("dotenv").config();
 
-const auth = require("./middlewares/auth");
 const mainRouter = require("./routes");
 const errorHandler = require("./middlewares/error-handler");
-const {
-  validateCreateUser,
-  validateLogin,
-} = require("./middlewares/validation");
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { login, createUser } = require("./controllers/users");
-const { getItems } = require("./controllers/clothingItems");
-const NotFoundError = require("./errors/NotFoundError");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -37,16 +29,7 @@ app.get("/crash-test", () => {
   }, 0);
 });
 
-app.post("/signin", validateLogin, login);
-app.post("/signup", validateCreateUser, createUser);
-app.get("/items", getItems);
-
-app.use(auth);
 app.use("/", mainRouter);
-
-app.use((req, res, next) => {
-  next(new NotFoundError("Resource not found"));
-});
 
 app.use(errorLogger);
 
